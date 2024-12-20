@@ -13,6 +13,15 @@ class WatchlistViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = WatchlistSerializer(data=request.data)
         if serializer.is_valid():
+            movie_id = serializer.validated_data.get('movie_id')
+            if Watchlist.objects.filter(movie_id=movie_id).exists():
+                return custom_response(
+                    data={},
+                    message=f"Movie with MovieID: {movie_id} already exists in watchlist",
+                    code=status.HTTP_400_BAD_REQUEST,
+                    endpoint="/api/watchlists",
+                    response_status=status.HTTP_400_BAD_REQUEST
+                )
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return custom_response(
