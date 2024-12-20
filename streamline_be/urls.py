@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
-from movie.urls import movies_router
+from watchlist.urls import movies_router
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.registry.extend(movies_router.registry)
