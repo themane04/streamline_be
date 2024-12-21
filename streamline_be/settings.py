@@ -22,8 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'watchlist_movie',
-    'favorite_movies',
+    'movie',
 ]
 
 MIDDLEWARE = [
