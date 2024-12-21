@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Watchlist(models.Model):
+class WatchlistMovie(models.Model):
     movie_id = models.IntegerField()
     title = models.CharField()
     poster_path = models.CharField()
@@ -11,4 +11,4 @@ class Watchlist(models.Model):
         return self.title
 
     class Meta:
-        db_table = 'watchlist'
+        db_table = 'watchlist_movies'

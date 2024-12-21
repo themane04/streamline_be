@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('vote_average', models.FloatField()),
             ],
             options={
-                'db_table': 'watchlist',
+                'db_table': 'watchlist_movie',
             },
         ),
     ]

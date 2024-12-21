@@ -2,19 +2,19 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 
 from streamline_be.utils import custom_response
-from .models import Watchlist
-from .serializer import WatchlistSerializer
+from .models import WatchlistMovie
+from .serializer import WatchlistMovieSerializer
 
 
-class WatchlistViewSet(viewsets.ModelViewSet):
-    queryset = Watchlist.objects.all()
-    serializer_class = WatchlistSerializer
+class WatchlistMovieViewSet(viewsets.ModelViewSet):
+    queryset = WatchlistMovie.objects.all()
+    serializer_class = WatchlistMovieSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = WatchlistSerializer(data=request.data)
+        serializer = WatchlistMovieSerializer(data=request.data)
         if serializer.is_valid():
             movie_id = serializer.validated_data.get('movie_id')
-            if Watchlist.objects.filter(movie_id=movie_id).exists():
+            if WatchlistMovie.objects.filter(movie_id=movie_id).exists():
                 return custom_response(
                     data={},
                     message=f"Movie with MovieID: {movie_id} already exists in watchlist",
@@ -33,7 +33,7 @@ class WatchlistViewSet(viewsets.ModelViewSet):
         )
 
     def list(self, request, *args, **kwargs):
-        movies = Watchlist.objects.all()
+        movies = WatchlistMovie.objects.all()
         if not movies:
             return custom_response(
                 data=[],
@@ -42,13 +42,13 @@ class WatchlistViewSet(viewsets.ModelViewSet):
                 endpoint="/api/watchlists",
                 response_status=status.HTTP_204_NO_CONTENT
             )
-        serializer = WatchlistSerializer(movies, many=True)
+        serializer = WatchlistMovieSerializer(movies, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
         try:
-            movie = Watchlist.objects.get(movie_id=kwargs['pk'])
-        except Watchlist.DoesNotExist:
+            movie = WatchlistMovie.objects.get(movie_id=kwargs['pk'])
+        except WatchlistMovie.DoesNotExist:
             return custom_response(
                 data={},
                 message=f"Movie with MovieID: {kwargs['pk']} not found in watchlist",
@@ -56,16 +56,16 @@ class WatchlistViewSet(viewsets.ModelViewSet):
                 endpoint=f"/api/watchlists/{kwargs['pk']}",
                 response_status=status.HTTP_404_NOT_FOUND
             )
-        serializer = WatchlistSerializer(movie)
+        serializer = WatchlistMovieSerializer(movie)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
         try:
-            movie = Watchlist.objects.get(movie_id=kwargs['pk'])
-        except Watchlist.DoesNotExist:
+            movie = WatchlistMovie.objects.get(movie_id=kwargs['pk'])
+        except WatchlistMovie.DoesNotExist:
             return custom_response(
                 data={},
-                message=f"Movie with ID: {kwargs['pk']} not found in watchlist",
+                message=f"Movie with MovieID: {kwargs['pk']} not found in watchlist",
                 code=status.HTTP_404_NOT_FOUND,
                 endpoint=f"/api/watchlists/{kwargs['pk']}",
                 response_status=status.HTTP_404_NOT_FOUND
