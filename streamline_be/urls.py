@@ -2,10 +2,12 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 
-from watchlist_movie.urls import movies_router
+from favorite_movies.urls import favorites
+from watchlist_movie.urls import watchlists
 
 router = routers.SimpleRouter(trailing_slash=False)
-router.registry.extend(movies_router.registry)
+router.registry.extend(watchlists.registry)
+router.registry.extend(favorites.registry)
 
 api_urlpatterns = [
     path('', include(router.urls)),

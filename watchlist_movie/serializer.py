@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from watchlist_movie.models import WatchlistMovie
+from .models import WatchlistMovie
 
 
 class WatchlistMovieSerializer(serializers.ModelSerializer):
