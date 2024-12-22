@@ -7,6 +7,7 @@ django.setup()
 from django.core.management import call_command
 from django.apps import apps
 
+
 def make_and_apply_migrations():
     for app in apps.get_app_configs():
         migrations_dir = os.path.join(app.path, 'migrations')
@@ -22,11 +23,11 @@ def make_and_apply_migrations():
             print(f"Failed to create migrations for {app.label}: {str(e)}")
 
         try:
-            # Applying migrations
             call_command('migrate', app.label)
             print(f"Applied migrations for {app.label}")
         except Exception as e:
             print(f"Failed to apply migrations for {app.label}: {str(e)}")
+
 
 if __name__ == '__main__':
     make_and_apply_migrations()
