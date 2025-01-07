@@ -72,13 +72,19 @@ class UpdateUserProfileView(viewsets.ViewSet):
         serializer = UserProfileSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(
-            {
-                "message": "Could not update profile",
-                "errors": serializer.errors,
-            },
-            status=status.HTTP_400_BAD_REQUEST,
+            return custom_response(
+                data=serializer.data,
+                message="Profile updated successfully",
+                code=status.HTTP_200_OK,
+                endpoint=f"/api/update-profile/{user.id}",
+                response_status=status.HTTP_200_OK
+            )
+        return custom_response(
+            data=serializer.errors,
+            message="Could not update profile",
+            code=status.HTTP_400_BAD_REQUEST,
+            endpoint=f"/api/update-profile/{user.id}",
+            response_status=status.HTTP_400_BAD_REQUEST
         )
 
 
