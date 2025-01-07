@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from streamline_be.utils import custom_response
 from .models import User
-from .serializer import UserSerializer, CustomTokenObtainPairSerializer
+from .serializer import UserSerializer, CustomTokenObtainPairSerializer, UserProfileSerializer, UserPasswordSerializer
 
 
 class SignUpViewSet(viewsets.ViewSet):
@@ -41,11 +41,17 @@ class GetUserFromTokenView(viewsets.ViewSet):
             user_id = decoded_token['user_id']
             user = User.objects.get(id=user_id)
 
+            profile_image_url = (
+                request.build_absolute_uri(user.profile_image.url)
+                if user.profile_image
+                else None
+            )
+
             user_data = {
                 'id': user.id,
                 'username': user.username,
                 'email': user.email,
-                'profile_image': user.profile.profile_image.url if hasattr(user, 'profile') else None,
+                'profile_image': profile_image_url,
                 'date_joined': user.date_joined
             }
 
@@ -58,3 +64,40 @@ class GetUserFromTokenView(viewsets.ViewSet):
                 endpoint="/api/get-user-from-token",
                 response_status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class UpdateUserProfileView(viewsets.ViewSet):
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "message": "Could not update profile",
+                "errors": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class ResetUserPasswordView(viewsets.ViewSet):
+    def update(self, request, *args, **kwargs):
+        serializer = UserPasswordSerializer(data=request.data, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return custom_response(
+                data={},
+                message="Password updated successfully",
+                code=status.HTTP_200_OK,
+                endpoint="/api/reset-password",
+                response_status=status.HTTP_200_OK
+            )
+        return custom_response(
+            data=serializer.errors,
+            message="Could not update password",
+            code=status.HTTP_400_BAD_REQUEST,
+            endpoint="/api/reset-password",
+            response_status=status.HTTP_400_BAD_REQUEST
+        )
