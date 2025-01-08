@@ -102,7 +102,7 @@ class GetUserFromTokenView(viewsets.ViewSet):
 class UpdateUserProfileView(viewsets.ViewSet):
     def update(self, request, *args, **kwargs):
         user = request.user
-        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        serializer = UserProfileSerializer(user, data=request.data, partial=True, context={"request": request})
         if serializer.is_valid():
             serializer.save()
             return custom_response(
