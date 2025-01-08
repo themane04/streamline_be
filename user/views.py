@@ -1,6 +1,5 @@
 from rest_framework import viewsets, status
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -17,7 +16,13 @@ class SignUpViewSet(viewsets.ViewSet):
         serializer = UserSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+            return custom_response(
+                data=serializer.data,
+                message="User created successfully",
+                code=status.HTTP_201_CREATED,
+                endpoint="/api/signup",
+                response_status=status.HTTP_201_CREATED
+            )
         return custom_response(
             data=serializer.errors,
             message="Could not create user",
@@ -29,6 +34,28 @@ class SignUpViewSet(viewsets.ViewSet):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            token_data = serializer.validated_data
+            response_data = custom_response(
+                data=token_data,
+                message="Token obtained successfully.",
+                code=200,
+                endpoint=self.request.path,
+                response_status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            response_data = custom_response(
+                data=None,
+                message=str(e),
+                code=400,
+                endpoint=self.request.path,
+                response_status=status.HTTP_400_BAD_REQUEST
+            )
+        return response_data
 
 
 class GetUserFromTokenView(viewsets.ViewSet):
@@ -55,7 +82,13 @@ class GetUserFromTokenView(viewsets.ViewSet):
                 'date_joined': user.date_joined
             }
 
-            return Response(user_data, status=status.HTTP_200_OK)
+            return custom_response(
+                data=user_data,
+                message="User data retrieved successfully",
+                code=status.HTTP_200_OK,
+                endpoint="/api/get-user-from-token",
+                response_status=status.HTTP_200_OK
+            )
         except Exception as e:
             return custom_response(
                 data={},
