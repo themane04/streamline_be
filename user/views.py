@@ -120,6 +120,17 @@ class UpdateUserProfileView(viewsets.ViewSet):
             response_status=status.HTTP_400_BAD_REQUEST
         )
 
+    def destroy(self, request, *args, **kwargs):
+        user = request.user
+        user.delete()
+        return custom_response(
+            data={},
+            message="Account deleted successfully",
+            code=status.HTTP_204_NO_CONTENT,
+            endpoint=f"/api/delete-account/{user.id}",
+            response_status=status.HTTP_204_NO_CONTENT
+        )
+
 
 class ResetUserPasswordView(viewsets.ViewSet):
     def update(self, request, *args, **kwargs):

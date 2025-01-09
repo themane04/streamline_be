@@ -1,3 +1,4 @@
+from django.utils.timezone import now
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -73,5 +74,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
+        user = self.user
+        user.last_login = now()
+        user.save(update_fields=['last_login'])
         data['user'] = LoginProfileSerializer(self.user, context={'request': self.context.get('request')}).data
         return data
