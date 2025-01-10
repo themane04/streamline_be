@@ -3,3 +3,5 @@
 /.env
 */migrations/*
 !*/migrations/__init__.py
+/media/avatars/*
+!/media/avatars/default_avatar.png
