@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.utils.timezone import now
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -7,10 +9,11 @@ from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
+    birthday = serializers.DateField(input_formats=['%d-%m-%Y', '%d.%m.%Y'])
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'profile_image', 'password', 'confirm_password', 'date_joined']
+        fields = ['id', 'username', 'email', 'birthday', 'profile_image', 'password', 'confirm_password', 'date_joined']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -24,16 +27,32 @@ class UserSerializer(serializers.ModelSerializer):
         validated_data.pop('confirm_password')
         return User.objects.create_user(**validated_data)
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if representation.get('birthday'):
+            birthday = datetime.strptime(representation['birthday'], '%Y-%m-%d')
+            representation['birthday'] = birthday.strftime('%d.%m.%Y')
+        return representation
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    birthday = serializers.DateField(input_formats=['%d-%m-%Y', '%d.%m.%Y'])
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'profile_image', 'date_joined']
+        fields = ['id', 'username', 'email', 'birthday', 'profile_image', 'date_joined']
         extra_kwargs = {
             'username': {'required': False},
             'email': {'required': False},
             'profile_image': {'required': False},
         }
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if representation.get('birthday'):
+            birthday = datetime.strptime(representation['birthday'], '%Y-%m-%d')
+            representation['birthday'] = birthday.strftime('%d.%m.%Y')
+        return representation
 
 
 class UserPasswordSerializer(serializers.Serializer):

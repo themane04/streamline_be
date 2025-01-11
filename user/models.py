@@ -4,6 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
+    birthday = models.DateField()
     profile_image = models.ImageField(upload_to='avatars/', null=True, blank=True, default='avatars/default_avatar.png')
 
     USERNAME_FIELD = 'email'

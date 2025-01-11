@@ -118,3 +118,5 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
+
+DATE_INPUT_FORMATS = ['%d-%m-%Y', '%d.%m.%Y']
