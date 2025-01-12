@@ -73,17 +73,15 @@ class GetUserFromTokenView(viewsets.ViewSet):
                 if user.profile_image
                 else None
             )
-
-            user_data = {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'profile_image': profile_image_url,
-                'date_joined': user.date_joined
-            }
-
             return custom_response(
-                data=user_data,
+                data={
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'birthday': user.birthday,
+                    'profile_image': profile_image_url,
+                    'date_joined': user.date_joined
+                },
                 message="User data retrieved successfully",
                 code=status.HTTP_200_OK,
                 endpoint="/api/get-user-from-token",
